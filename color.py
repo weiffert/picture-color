@@ -5,17 +5,31 @@ import matplotlib.colors as colors
 
 def main():
     if len(sys.argv) != 2 and len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} ./path/to/image [sample-size-percentage between 0 and 1 (like 0.01)]")
+        print(f"Usage: {sys.argv[0]} ./path/to/image [sample-size-percentage between 0 and 1 (default is 0.01)]")
         exit(0)
 
-    imageFile = sys.argv[1]
-    sampleSize = sys.argv[2] if len(sys.argv) == 3 else 0.01
+    sample = sampleData(
+        readImage(sys.argv[1]), 
+        getSamplePercentage()
+    )
 
-    pixels = readImage(imageFile)
-    sample = sampleData(pixels, sampleSize)
     print(f"Graphing {len(sample)} data points...")
     generateColorGraph(sample)
     print(f"Done graphing. View file at {sys.argv[1].split('.')[0]}-graph.png")
+
+def readImage(path):
+    image = Image.open(path)
+    pixels = list(image.getdata())
+    return pixels
+
+def getSamplePercentage():
+    if len(sys.argv) == 3:
+        percentage = sys.argv[3]
+        if percentage > 1 or percentage <= 0:
+            print("Invalid sample percentage. Must be > 0 and <= 1")
+            exit(1)
+        return percentage
+    return 0.01
 
 def generateColorGraph(colorData):
     fig = plt.figure(figsize = (10, 7))
@@ -26,11 +40,6 @@ def generateColorGraph(colorData):
     plt.title(f"{sys.argv[1].split('.')[0]} Color Distribution")
     plt.savefig(f"{sys.argv[1].split('.')[0]}-graph.png")
 
-def readImage(path):
-    image = Image.open(path)
-    pixels = list(image.getdata())
-    return pixels
-    
 def sampleData(data, percentage):
     return random.sample(
         data, 
