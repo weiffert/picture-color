@@ -13,7 +13,9 @@ def main():
 
     pixels = readImage(imageFile)
     sample = sampleData(pixels, sampleSize)
+    print(f"Graphing {len(sample)} data points...")
     generateColorGraph(sample)
+    print(f"Done graphing. View file at {sys.argv[1].split('.')[0]}-graph.png")
 
 def generateColorGraph(colorData):
     fig = plt.figure(figsize = (10, 7))
